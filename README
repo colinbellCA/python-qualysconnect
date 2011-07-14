@@ -14,6 +14,14 @@ $ python setup.py install
 
 NOTE: If you would like to experiment without installing globally, look into 'virtualenv'.
 
+=== Requirements ===
+
+You will need lxml installed for XML parsing in qhostinfo.py to work.
+
+* http://lxml.de/
+
+I've only tested this with Python 2.x.  I will need to test it with Python 3.x.
+
 == Configuration ==
 
 By default, the package will ask at the command prompt for username and
