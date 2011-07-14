@@ -20,6 +20,7 @@ class QGConnector:
     """
     def __init__(self, pAPIVer, pHost="qualysapi.qualys.com"):
         self._APIVersion = pAPIVer
+        self._APIHost = pHost
         
         # Based on the provided API Version number and hostname,
         # calculate the API URI that we should use to request from QualysGuard.
@@ -49,6 +50,12 @@ class QGConnector:
         and hostname combination.
         """
         return self._APIURI
+
+    def apiHOST(self):
+        """ Returns the hostname of the Qualys instance this connector is talking
+        to.
+        """
+        return self._APIHost
 
     def version(self):
         """ Return the API Version that this QualysGuard Connector (QGConnector)

@@ -118,7 +118,7 @@ if __name__ == '__main__':
         
         for detect in info.RESPONSE.HOST_LIST.HOST.DETECTION_LIST.DETECTION:
             qid = str(detect.QID)
-            print '%s - https://qualysguard.mss.telus.com/fo/common/vuln_info.php?id=%s'%(qid,qid)
+            print '%s - https://%s/fo/common/vuln_info.php?id=%s'%(qid,qgs.apiHOST(),qid)
             print
     except AttributeError:
         pass
