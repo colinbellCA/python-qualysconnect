@@ -101,15 +101,16 @@ class QGAPIConnect(QGConnector):
         data -- [optional] if provided, use HTTP POST and submit data provided.
         """
         qualysRequest = self._generate_request(apiReq,data)
-        logging.debug("\n".join(("=================",qualysRequest.get_full_url(),
-                               str(qualysRequest.get_data()),
-                               qualysRequest.get_method(),
-                               str(dir(qualysRequest)),
-                               str(dir(self._passman)),
-                               str(self._passman.is_suburi(self.apiURI(),qualysRequest.get_full_url())),
-                               str(self._passman.find_user_password("LaLaLa",qualysRequest.get_full_url())),
-                               str(dir(self._opener)),
-                               str(qualysRequest.headers),"==================")))
+#        logging.debug("\n".join(("=================",qualysRequest.get_full_url(),
+#                               str(qualysRequest.get_data()),
+#                               qualysRequest.get_method(),
+#                               str(dir(qualysRequest)),
+#                               str(dir(self._passman)),
+#                               str(self._passman.is_suburi(self.apiURI(),qualysRequest.get_full_url())),
+#                               str(self._passman.find_user_password("LaLaLa",qualysRequest.get_full_url())),
+#                               str(dir(self._opener)),
+#                               str(qualysRequest.headers),"==================")))
+        logging.debug("QGv1-REQ| %s, %s"%(str(apiReq), str(data)))
         resp = self._opener.open(qualysRequest)
         return resp.read()
 

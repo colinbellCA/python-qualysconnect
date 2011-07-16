@@ -14,7 +14,7 @@ from qualysconnect.util import is_valid_ip_address, hostname_to_ip
 from qualysconnect.qg.xmlproc import *
 
 __author__ = "Colin Bell <colin.bell@uwaterloo.ca>"
-__copyright__ = "Copyright 2011, Colin Bell (University of Waterloo)"
+__copyright__ = "Copyright 2011, University of Waterloo"
 __license__ = "BSD-new"
 
 def process_cli_arguments():
