@@ -1,0 +1,16 @@
+2011-08-04 Colin Bell <colin.bell@uwaterloo.ca>
+
+    * Creation of CHANGELOG file
+
+    * Addition of qscanhist.py script.  A stub to start
+      trying to make a tool to query 
+
+    * In qualysconnect/qg/xmlproc.py changed name
+      QGXP_process_host_list -> QGXP_hostlist_to_list
+
+    * Miscellaneous cleanup.
+
+
+2011-07-14 Colin Bell <colin.bell@uwaterloo.ca>
+
+    * Initial release:  python-qualysconnect-0.0.1r1 
