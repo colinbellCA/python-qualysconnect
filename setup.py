@@ -42,7 +42,7 @@ setup(name='QualysConnect',
       package_dir={'': 'src'},
       packages=['qualysconnect', 'qualysconnect.qg'],
       package_data={'qualysconnect':['LICENSE']},
-      scripts=['src/scripts/qhostinfo.py'],
+      scripts=['src/scripts/qhostinfo.py', 'src/scripts/qscanhist.py'],
       long_description=read('README'),
       classifiers=[
           "Development Status :: 3 - Alpha",

@@ -58,4 +58,4 @@ Usage: qhostinfo.py [options]
 The bitbucket repository contains a directory called 'examples' that provides
 barebones examples of the setup of a v1 and v2 connection.
 
-https://bitbucket.org/uWaterloo_IST_ISS/python-qualysconnect/overview
+https://bitbucket.org/uWaterloo_IST_ISS/python-qualysconnect/src

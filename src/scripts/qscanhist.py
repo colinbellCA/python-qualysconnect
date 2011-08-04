@@ -1,18 +1,16 @@
 #!/usr/bin/env python
-""" qhostinfo
-A script that takes a hostname or ip address and queries QualysGuard for 
-vulnerabilities related to said host.
+""" qscanhist
+A script that takes a hostname or ip address and queries QualysGuard for
+scan history.
 """
 import sys
 import logging
+import datetime
 
-from datetime import datetime
 from optparse import OptionParser
 
-from qualysconnect.util import build_v2_session
+from qualysconnect.util import build_v1_connector
 from qualysconnect.util import is_valid_ip_address, hostname_to_ip
-
-from qualysconnect.qg.xmlproc import QGXP_lxml_objectify, QGXP_qgdt_to_datetime
 
 __author__ = "Colin Bell <colin.bell@uwaterloo.ca>"
 __copyright__ = "Copyright 2011, University of Waterloo"
@@ -79,51 +77,15 @@ if __name__ == '__main__':
         raise Exception('Critical Error. No IP computed to query.')
     
     # begin session with QualysGuard and process return.
-    qgs=build_v2_session()
-    qgs.connect()
+    qgs=build_v1_connector()
+
+    # calculate date 1 year (minus a day) in the past for query
+    today = datetime.date.today()
+    querydelta = datetime.timedelta(days=365-1)
+    target = today - querydelta
+
+    # request VM detection records from QualysGuard using APIv1
+    ret = qgs.request("scan_target_history.php?date_from=%s&ip_targeted_list=1&ips=%s&"
+            %(target.isoformat(),host,))
     
-    # request VM detection records from QualysGuard using APIv2
-    ret = qgs.request("asset/host/vm/detection/?action=list&ips=%s&"%(host,))
-    
-    SEP = '========================'
-
-    info = QGXP_lxml_objectify(ret)
-    print SEP
-    print 'QualysGuard Scan Results'
-    print SEP
-
-    try:
-        scandt = QGXP_qgdt_to_datetime(info.RESPONSE.HOST_LIST.HOST.LAST_SCAN_DATETIME)
-    except AttributeError:
-        print "No host results returned for %s."%(host,)
-        sys.exit(1)
-
-    print "SCAN:\t%s"%(scandt)
-
-    try:
-        print "NAME:\t%s"%(info.RESPONSE.HOST_LIST.HOST.DNS,)
-    except AttributeError:
-        pass
-
-    print "IP:\t%s"%(info.RESPONSE.HOST_LIST.HOST.IP,)
-
-    try:
-        print "OS:\t%s"%(info.RESPONSE.HOST_LIST.HOST.OS,)
-    except AttributeError:
-        pass
-
-    try:
-        print
-        print 'DISCOVERED QIDs'
-        print SEP
-        
-        for detect in info.RESPONSE.HOST_LIST.HOST.DETECTION_LIST.DETECTION:
-            qid = str(detect.QID)
-            print '%s - https://%s/fo/common/vuln_info.php?id=%s'%(qid,qgs.apiHOST(),qid)
-            print
-    except AttributeError:
-        pass
-    
-    print SEP
-    
-    qgs.disconnect()
+    print ret

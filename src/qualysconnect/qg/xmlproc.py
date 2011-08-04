@@ -14,7 +14,7 @@ __author__ = "Colin Bell <colin.bell@uwaterloo.ca>"
 __copyright__ = "Copyright 2011, University of Waterloo"
 __license__ = "BSD-new"
 
-def QGXP_process_host_list(qgXML):
+def QGXP_hostlist_to_list(qgXML):
     """ Return a list of IPs pulled from a QualysGuard HOST LIST XML block.
     
     Keyword Arguments:
