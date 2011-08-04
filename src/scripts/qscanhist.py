@@ -1,17 +1,16 @@
 #!/usr/bin/env python
-""" qhostinfo
-A script that takes a hostname or ip address and queries QualysGuard for 
+""" qscanhist
+A script that takes a hostname or ip address and queries QualysGuard for
+scan history.
 """
 import sys
 import logging
+import datetime
 
-from datetime import datetime
 from optparse import OptionParser
 
 from qualysconnect.util import build_v1_connector
 from qualysconnect.util import is_valid_ip_address, hostname_to_ip
-
-from qualysconnect.qg.xmlproc import *
 
 __author__ = "Colin Bell <colin.bell@uwaterloo.ca>"
 __copyright__ = "Copyright 2011, University of Waterloo"
@@ -79,8 +78,14 @@ if __name__ == '__main__':
     
     # begin session with QualysGuard and process return.
     qgs=build_v1_connector()
-    
+
+    # calculate date 1 year (minus a day) in the past for query
+    today = datetime.date.today()
+    querydelta = datetime.timedelta(days=365-1)
+    target = today - querydelta
+
     # request VM detection records from QualysGuard using APIv1
-    ret = qgs.request("scan_target_history.php?date_from=2011-01-01&ip_targeted_list=1&ips=%s&"%(host,))
+    ret = qgs.request("scan_target_history.php?date_from=%s&ip_targeted_list=1&ips=%s&"
+            %(target.isoformat(),host,))
     
     print ret

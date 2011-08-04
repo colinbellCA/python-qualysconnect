@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """ qhostinfo
 A script that takes a hostname or ip address and queries QualysGuard for 
+vulnerabilities related to said host.
 """
 import sys
 import logging
@@ -11,7 +12,7 @@ from optparse import OptionParser
 from qualysconnect.util import build_v2_session
 from qualysconnect.util import is_valid_ip_address, hostname_to_ip
 
-from qualysconnect.qg.xmlproc import *
+from qualysconnect.qg.xmlproc import QGXP_lxml_objectify, QGXP_qgdt_to_datetime
 
 __author__ = "Colin Bell <colin.bell@uwaterloo.ca>"
 __copyright__ = "Copyright 2011, University of Waterloo"
