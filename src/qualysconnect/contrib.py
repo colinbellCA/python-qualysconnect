@@ -1,3 +1,4 @@
+
 # File for 3rd party contributions.
 
 __license__ = "BSD-new"
@@ -5,8 +6,42 @@ __license__ = "BSD-new"
 import unicodedata
 from collections import defaultdict
 
+def qg_html_to_ascii(qg_html_text):
+    """Convert and return QualysGuard's quasi HTML text to ASCII text."""
+    text = qg_html_text
+    # Handle tagged line breaks (<p>, <br>)
+    text = re.sub(r'(?i)<br>[ ]*', '\n', text)
+    text = re.sub(r'(?i)<p>[ ]*', '\n', text)
+    # Remove consecutive line breaks
+    text = re.sub(r"^\s+", "", text, flags = re.MULTILINE)
+    # Remove empty lines at the end.
+    text = re.sub('[\n]+$', '$', text)
+    # Store anchor tags href attribute
+    links = list(lxml.html.iterlinks(text))
+    # Remove anchor tags
+    html_element = lxml.html.fromstring(text)
+    # Convert anchor tags to "link_text (link: link_url )".
+    logging.debug('Converting anchor tags...')
+    text = html_element.text_content().encode('ascii', 'ignore')
+    # Convert each link.
+    for l in links:
+        # Find and replace each link.
+        link_text = l[0].text_content().encode('ascii', 'ignore').strip()
+        link_url = l[2].strip()
+        # Replacing link_text
+        if link_text != link_url:
+            # Link text is different, most likely a description.
+            text = string.replace(text, link_text, '%s (link: %s )' % (link_text, link_url))
+        else:
+            # Link text is the same as the href.  No need to duplicate link.
+            text = string.replace(text, link_text, '%s' % (link_url))
+    logging.debug('Done.')
+    return text
+
 def qg_parse_informational_qids(xml_report):
-    """Return vulnerabilities of severity 1 and 2 levels due to a restriction of QualysGuard's inability to report them in the internal ticketing system."""
+    """Return vulnerabilities of severity 1 and 2 levels due to a restriction of
+       QualysGuard's inability to report them in the internal ticketing system.
+    """
 #    asset_group's vulnerability data map:
 #    {'qid_number': {
 #                    # CSV info
@@ -21,8 +56,6 @@ def qg_parse_informational_qids(xml_report):
     # Add all vulnerabilities to list of dictionaries.
     # Use defaultdict in case a new QID is encountered.    
     info_vulns = defaultdict(dict)
-    ## Objectify XML file.
-    #tree = objectify.fromstring(xml_report)
     # Parse vulnerabilities in xml string.
     tree = objectify.fromstring(xml_report)
     # Write IP, DNS, & Result into each QID CSV file.
@@ -49,19 +82,19 @@ def qg_parse_informational_qids(xml_report):
             # Attempt to add host to QID's list of affected hosts.
             try:
                 info_vulns[qid]['hosts'].append({'ip': '%s' % (ip),
-                                                        'dns': '%s' % (dns),
-                                                        'netbios': '%s' % (netbios),
-                                                        'vuln_id': '', # Informational QIDs do not have vuln_id numbers.  This is a flag to write the CSV file.
-                                                        'result': '%s' % (result), })
+                                                 'dns': '%s' % (dns),
+                                                 'netbios': '%s' % (netbios),
+                                                 'vuln_id': '', # Informational QIDs do not have vuln_id numbers.  This is a flag to write the CSV file.
+                                                 'result': '%s' % (result), })
             except KeyError:
                 # New QID.
                 logging.debug('New QID found: %s' % (qid))
                 info_vulns[qid]['hosts'] = []
                 info_vulns[qid]['hosts'].append({'ip': '%s' % (ip),
-                                                        'dns': '%s' % (dns),
-                                                        'netbios': '%s' % (netbios),
-                                                        'vuln_id': '', # Informational QIDs do not have vuln_id numbers.  This is a flag to write the CSV file. 
-                                                        'result': '%s' % (result), })
+                                                 'dns': '%s' % (dns),
+                                                 'netbios': '%s' % (netbios),
+                                                 'vuln_id': '', # Informational QIDs do not have vuln_id numbers.  This is a flag to write the CSV file. 
+                                                 'result': '%s' % (result), })
     # All vulnerabilities added.
     # Add all vulnerabilty information.
     for vuln_details in tree.GLOSSARY.VULN_DETAILS_LIST.VULN_DETAILS:
@@ -74,6 +107,8 @@ def qg_parse_informational_qids(xml_report):
     # Ready to report informational vulnerabilities.
     return info_vulns
 
+#TODO: Implement required function qg_remediation_tickets(asset_group, status, qids)
+#TODO: Remove static 'report_template' value.  Parameterize and document required report template.
 def qg_ticket_list(asset_group, severity, qids = None):
     """Return dictionary of each vulnerability reported against asset_group of severity."""
     global asset_group_details
@@ -178,35 +213,3 @@ def qg_ticket_list(asset_group, severity, qids = None):
     logging.debug('vulns =')
     logging.debug(vulns)
     return vulns
-
-def qg_html_to_ascii(qg_html_text):
-    """Convert and return QualysGuard's quasi HTML text to ASCII text."""
-    text = qg_html_text
-    # Handle tagged line breaks (<p>, <br>)
-    text = re.sub(r'(?i)<br>[ ]*', '\n', text)
-    text = re.sub(r'(?i)<p>[ ]*', '\n', text)
-    # Remove consecutive line breaks
-    text = re.sub(r"^\s+", "", text, flags = re.MULTILINE)
-    # Remove empty lines at the end.
-    text = re.sub('[\n]+$', '$', text)
-    # Store anchor tags href attribute
-    links = list(lxml.html.iterlinks(text))
-    # Remove anchor tags
-    html_element = lxml.html.fromstring(text)
-    # Convert anchor tags to "link_text (link: link_url )".
-    logging.debug('Converting anchor tags...')
-    text = html_element.text_content().encode('ascii', 'ignore')
-    # Convert each link.
-    for l in links:
-        # Find and replace each link.
-        link_text = l[0].text_content().encode('ascii', 'ignore').strip()
-        link_url = l[2].strip()
-        # Replacing link_text
-        if link_text != link_url:
-            # Link text is different, most likely a description.
-            text = string.replace(text, link_text, '%s (link: %s )' % (link_text, link_url))
-        else:
-            # Link text is the same as the href.  No need to duplicate link.
-            text = string.replace(text, link_text, '%s' % (link_url))
-    logging.debug('Done.')
-    return text
