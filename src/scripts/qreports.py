@@ -34,7 +34,7 @@ def process_cli_arguments():
     parser.add_option("-R", "--list-report", action="store_true", dest="listreports",
                       help="List known report templates.", default=False)
     
-    # Options pertaining to launching and downloading a report.
+    # Options pertaining to launching a report.
     parser.add_option("-L", "--launch", action="store_true", dest="launchrpt",
                       help="Launch a report (provide -n, -r, -o)", default=False)
     parser.add_option("-n", dest="rpt_n",
@@ -42,13 +42,21 @@ def process_cli_arguments():
     parser.add_option("-r", dest="rpt_r",
                       help="The scan numbers you would like to use.", default=None)
     parser.add_option("-o", dest="rpt_o",
-                      help="The output format you would like for your report.")
+                      help="The output format you would like for your report.",
+                      default=None)
     parser.add_option("-t", dest="rpt_t",
-                      help="The generated report title.")
+                      help="The generated report title.", default=None)
+    # Options pertaining to seeing the progress of a report.
+    parser.add_option("-P", "--progress", dest="prog_n",
+                      help="Show the progress of a given report.")
+    # Options pertaining to downloading a report.
+    parser.add_option("-D", "--download", dest="dl_n",
+                      help="Download the results from a report.")
     
     (options, args) = parser.parse_args()
     
-    if not (options.listscans or options.listreports or options.launchrpt ):
+    if not ( options.listscans or options.listreports or options.launchrpt
+               or options.prog_n or options.dl_n):
         parser.print_help()
         parser.error("Need arguments")
     
@@ -60,6 +68,10 @@ def process_cli_arguments():
     if options.scantype and not options.listscans:
         parser.print_help()
         parser.error("scan type (-t) can only be specified with (-s) option.")
+        
+    if options.launchrpt and not (options.rpt_n and options.rpt_r
+                                  and options.rpt_o and options.rpt_t):
+        parser.error("you must provide all RPT_* fields to launch a report.")
     
     # verify that there are no unprocessed arguments.
     if args:
@@ -85,7 +97,9 @@ def display_QG_report_template_list(list):
 #    from lxml import objectify
     for template in list.REPORT_TEMPLATE:
 #        print objectify.dump(template)
-        print "[%s]\t{( %s | %s )}"%(template.ID, str(template.TEMPLATE_TYPE)[0], template.TITLE)
+        print "[%s]\t{( %s | %s )}"%(template.ID,
+                                     str(template.TEMPLATE_TYPE)[0],
+                                     template.TITLE)
 
 # BEGIN
 #  main() function.  This is where the real 'meat' is.
@@ -118,8 +132,16 @@ if __name__ == '__main__':
         ret = qgc.request("report_template_list.php")
         display_QG_report_template_list(QGXP_lxml_objectify(ret))
         
-    if options.launchrpt:
-        print options.rpt_t    
- #   print ret
-
+    elif options.launchrpt:
+        ret = qgs.request("report/",
+                          "action=launch&template_id=%s&report_type=Scan&output_format=%s&report_refs=%s&report_title=%s"%
+                          (options.rpt_n, options.rpt_o, options.rpt_r, options.rpt_t))
+        print ret
+    elif options.prog_n:
+        ret = qgs.request("report/","action=list&id=%s&"%(options.prog_n))
+        print ret
+    elif options.dl_n:
+        ret = qgs.request("report/","action=fetch&id=%s&"%(options.dl_n))
+        print ret
+    
     qgs.disconnect()
