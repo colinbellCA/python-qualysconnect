@@ -127,6 +127,7 @@ if __name__ == '__main__':
         
         display_QG_scanlist(QGXP_lxml_objectify(ret))
     
+    # if requested, fetch and display report types 
     if options.listreports:
         qgc = build_v1_connector()
         ret = qgc.request("report_template_list.php")
@@ -136,10 +137,19 @@ if __name__ == '__main__':
         ret = qgs.request("report/",
                           "action=launch&template_id=%s&report_type=Scan&output_format=%s&report_refs=%s&report_title=%s"%
                           (options.rpt_n, options.rpt_o, options.rpt_r, options.rpt_t))
-        print ret
+        r = QGXP_lxml_objectify(ret)
+        print r.RESPONSE.ITEM_LIST.ITEM.VALUE
+
     elif options.prog_n:
         ret = qgs.request("report/","action=list&id=%s&"%(options.prog_n))
-        print ret
+        r = QGXP_lxml_objectify(ret)
+        if r.RESPONSE.REPORT_LIST.REPORT.STATUS.STATE == 'Running':
+            print "Waiting"
+        elif r.RESPONSE.REPORT_LIST.REPORT.STATUS.STATE == 'Finished':
+            print "Finished"
+        else:
+            print "Unknown"
+
     elif options.dl_n:
         ret = qgs.request("report/","action=fetch&id=%s&"%(options.dl_n))
         print ret
