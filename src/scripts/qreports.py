@@ -44,6 +44,9 @@ def process_cli_arguments():
     parser.add_option("-o", dest="rpt_o",
                       help="The output format you would like for your report.",
                       default=None)
+    parser.add_option("-i", dest="rpt_i",
+                      help="The IP set that you want to report on.",
+                      default=None)
     parser.add_option("-t", dest="rpt_t",
                       help="The generated report title.", default=None)
     # Options pertaining to seeing the progress of a report.
@@ -134,9 +137,14 @@ if __name__ == '__main__':
         display_QG_report_template_list(QGXP_lxml_objectify(ret))
         
     elif options.launchrpt:
-        ret = qgs.request("report/",
-                          "action=launch&template_id=%s&report_type=Scan&output_format=%s&report_refs=%s&report_title=%s"%
-                          (options.rpt_n, options.rpt_o, options.rpt_r, options.rpt_t))
+        if options.rpt_i != None:
+            ret = qgs.request("report/",
+                              "action=launch&template_id=%s&report_type=Scan&output_format=%s&report_refs=%s&report_title=%s&ips=%s"%
+                              (options.rpt_n, options.rpt_o, options.rpt_r, options.rpt_t, options.rpt_i))
+        else:
+            ret = qgs.request("report/",
+                              "action=launch&template_id=%s&report_type=Scan&output_format=%s&report_refs=%s&report_title=%s"%
+                              (options.rpt_n, options.rpt_o, options.rpt_r, options.rpt_t))
         r = QGXP_lxml_objectify(ret)
         print r.RESPONSE.ITEM_LIST.ITEM.VALUE
 
