@@ -137,11 +137,11 @@ if __name__ == '__main__':
         display_QG_report_template_list(QGXP_lxml_objectify(ret))
         
     elif options.launchrpt:
-        if options.rpt_i != None:
+        if options.rpt_i != None:  # act differently if provided a list of IPs
             ret = qgs.request("report/",
                               "action=launch&template_id=%s&report_type=Scan&output_format=%s&report_refs=%s&report_title=%s&ips=%s"%
                               (options.rpt_n, options.rpt_o, options.rpt_r, options.rpt_t, options.rpt_i))
-        else:
+        else: # vs. not having a list of IPs
             ret = qgs.request("report/",
                               "action=launch&template_id=%s&report_type=Scan&output_format=%s&report_refs=%s&report_title=%s"%
                               (options.rpt_n, options.rpt_o, options.rpt_r, options.rpt_t))
