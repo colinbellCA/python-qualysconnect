@@ -8,3 +8,4 @@ dist/
 header
 *~
 *.svn*
+.DS_Store

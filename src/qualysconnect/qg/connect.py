@@ -21,6 +21,7 @@ class QGConnector:
     def __init__(self, pAPIVer, pHost="qualysapi.qualys.com"):
         self._APIVersion = pAPIVer
         self._APIHost = pHost
+        self._opener = None  # None reference stub for common 'request' handle
         
         # Based on the provided API Version number and hostname,
         # calculate the API URI that we should use to request from QualysGuard.
@@ -62,6 +63,31 @@ class QGConnector:
         believes it is interacting with.
         """
         return self._APIVersion
+    
+    def build_request(self,apiReq,data=None):
+        """ Build and return the HTTP opener to the QualysGuard API w/ the
+        provided API request.
+        
+        Keyword Arguments:
+        ==================
+        apiReq -- request string from QualysGuard URL base onward.
+        data -- [optional] if provided, use HTTP POST and submit data provided.
+        """
+        qualysRequest = self._generate_request(apiReq,data)
+        logging.debug("QGC-build_request| %s, %s"%(str(apiReq), str(data)))
+        request_opener = self._opener.open(qualysRequest)
+        return request_opener
+    
+    def request(self, apiReq, data=None):
+        """ Return the response from QualysGuard API for the provided request.
+        
+        Keyword Arguments:
+        ==================
+        apiReq -- request string from QualysGuard URL base onward.
+        data -- [optional] if provided, use HTTP POST and submit data provided.
+        """
+        request = self.build_request(apiReq, data)
+        return request.read()
 
 class QGAPIConnect(QGConnector):
     """ Qualys Connection class which allows requests to the QualysGuard API
@@ -90,29 +116,6 @@ class QGAPIConnect(QGConnector):
         self._passman = HTTPPasswordMgrWithDefaultRealm()
         self._passman.add_password(None, self.apiURI(), pUser, pPassword)
         self._opener = urllib2.build_opener(HTTPBasicAuthHandler(self._passman))
-        #NOT-REQUIRED?# urllib2.install_opener(self._opener)
-
-    def request(self,apiReq,data=None):
-        """ Return the response from the QualysGuard API.
-        
-        Keyword Arguments:
-        ==================
-        apiReq -- request string from QualysGuard URL base onward.
-        data -- [optional] if provided, use HTTP POST and submit data provided.
-        """
-        qualysRequest = self._generate_request(apiReq,data)
-#        logging.debug("\n".join(("=================",qualysRequest.get_full_url(),
-#                               str(qualysRequest.get_data()),
-#                               qualysRequest.get_method(),
-#                               str(dir(qualysRequest)),
-#                               str(dir(self._passman)),
-#                               str(self._passman.is_suburi(self.apiURI(),qualysRequest.get_full_url())),
-#                               str(self._passman.find_user_password("LaLaLa",qualysRequest.get_full_url())),
-#                               str(dir(self._opener)),
-#                               str(qualysRequest.headers),"==================")))
-        logging.debug("QGv1-REQ| %s, %s"%(str(apiReq), str(data)))
-        resp = self._opener.open(qualysRequest)
-        return resp.read()
 
 class QGAPISession(QGConnector):
     """ Qualys Connection class which allows requests to the QualysGuard API
@@ -138,18 +141,6 @@ class QGAPISession(QGConnector):
         self._opener = urllib2.build_opener(HTTPCookieProcessor(self._cj))
         #NOT-REQUIRED?# urllib2.install_opener(self._opener)
 
-    def request(self,apiReq,data=None):
-        """ Return the response from the QualysGuard API.
-        
-        Keyword Arguments:
-        ==================
-        apiReq -- request string from QualysGuard URL base onward.
-        data -- [optional] if provided, use HTTP POST and submit data provided.
-        """
-        qualysRequest = self._generate_request(apiReq,data)
-        resp = self._opener.open(qualysRequest)
-        return resp.read()
-    
     def connect(self):
         """ Begin QualysGuard API Session (get session cookie). """
         return self.request("session/",

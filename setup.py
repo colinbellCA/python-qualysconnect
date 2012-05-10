@@ -49,7 +49,7 @@ setup(name='QualysConnect',
           "Topic :: Utilities",
           "License :: OSI Approved :: BSD License (3-clause)"
       ],
-      requires=[
+      install_requires=[
           'lxml'
       ],
      )

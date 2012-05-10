@@ -36,6 +36,7 @@ def QGXP_lxml_objectify(qgXML):
     """
     tree = objectify.fromstring(qgXML)
     logging.debug(objectify.dump(tree))
+
     return tree
 
 def QGXP_qgdt_to_datetime(qgdt):

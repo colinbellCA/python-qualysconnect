@@ -1,4 +1,53 @@
+2012-05-10 Colin Bell <colin.bell@uwaterloo.ca>
+    
+    * RELEASE: python-qualysconnect-0.0.5
+
+    * Making 'lxml' an 'install_requires' entry in setup.py
+      so it should automatically install now.
+
+    * Included community 'ipaddr' code to util.py. At
+      this point I think the rudimentary IP utilities will
+      eventually be removed and ipaddr-py will become a
+      hard dependency. Either way though, new requirements
+      are not to be taken lightly so both old and new ways
+      should work. 
+
+    * Cleaned up some duplicated code in
+      qualysconnect/connect.py and split 'request' into
+      'build_request' and 'request'. The request returns
+      .read() on the HTTP opener.  build_request returns
+      the prepped HTTP opener for people manipulating large
+      datasets.  Eventually, throttling + continuation will
+      need to be implemented to make this really powerful.
+
+2012-03-06 Colin Bell <colin.bell@uwaterloo.ca>
+
+    * RELEASE: python-qualysconnect-0.0.4
+
+    * Added ability to build reports for specific
+      IPs and/or IP ranges. (-i option)
+
+    * Learned a hard lesson about Mecurial merging
+      mistakes.  :-S  Abandoning 'development' branch
+      for the time being for local clones. Will look
+      to use cleaner formal versioned development
+      trees.
+
+2012-01-25 Colin Bell <colin.bell@uwaterloo.ca>
+
+    * RELEASE: python-qualysconnect-0.0.3
+
+    * Addition of a qreports.py tool for accessing
+      Qualys reports.  I use this for building simple
+      shell scripts/cron jobs to launch and download
+      reports.
+
+    * Addition of AUTHORS file to include other contributors. 
+
+
 2011-08-04 Colin Bell <colin.bell@uwaterloo.ca>
+
+    * RELEASE: python-qualysconnect-0.0.2
 
     * Creation of CHANGELOG file
 
@@ -13,4 +62,4 @@
 
 2011-07-14 Colin Bell <colin.bell@uwaterloo.ca>
 
-    * Initial release:  python-qualysconnect-0.0.1r1 
+    * RELEASE:  python-qualysconnect-0.0.1r1 
