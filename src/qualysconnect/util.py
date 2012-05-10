@@ -12,7 +12,7 @@ __license__ = "BSD-new"
 # define global values used by community code. will standardize debugging later.
 package = 'qualysconnect'
 module = 'util.py'
-version = qualysconnect.__version__
+from . import __version__ as version
 
 def build_v1_connector():
     """ Return a QGAPIConnect object for v1 API pulling settings from config
