@@ -50,8 +50,8 @@ Options:
   -v, --verbose         Display detailed logging messages.
   -a IP, --address=IP   Display QualysGuard results for IP.
   -H HOSTNAME, --hostname=HOSTNAME
-           Display QualysGuard results for HOSTNAME.
-  -P, --purge           Purge QualysGuard for host.
+                        Display QualysGuard results for HOSTNAME.
+Usage: qhostinfo.py [options]
 
 == Source Code Examples ==
 
