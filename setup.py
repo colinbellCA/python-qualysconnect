@@ -47,7 +47,7 @@ setup(name='QualysConnect',
       classifiers=[
           "Development Status :: 3 - Alpha",
           "Topic :: Utilities",
-          "License :: OSI Approved :: BSD License (3-clause)"
+          "License :: OSI Approved :: BSD License"
       ],
       install_requires=[
           'lxml'
