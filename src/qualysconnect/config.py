@@ -38,7 +38,7 @@ class QualysConnectConfig:
             
             # apply bitmask to current mode to verify ONLY user access permissions.
             if (mode & ( stat.S_IRWXG | stat.S_IRWXO )) != 0:
-                raise Exception("%s permissions must ONLY allow user access."%(filename,))
+                logging.warning("%s permissions must ONLY allow user access."%(filename,))
 
             self._cfgparse.read(self._cfgfile)
 
