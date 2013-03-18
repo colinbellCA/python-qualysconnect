@@ -44,7 +44,8 @@ class QGConnector:
         headers = {"X-Requested-With":"uWaterloo QualysConnect (python) v%s"%(VERSION,)}
         req = urllib2.Request(''.join((self.apiURI(),apiReq)), data, headers)
         
-        logging.info("GENREQ> %s w/ %s"%(req.get_full_url(),data))
+        logging.info("GENREQ> %s"%(req.get_full_url(),))
+        logging.debug("\t> w/ %s"%(data,))
         return req
 
     def apiURI(self):

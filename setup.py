@@ -50,6 +50,7 @@ setup(name='QualysConnect',
           "License :: OSI Approved :: BSD License"
       ],
       install_requires=[
-          'lxml'
+          'lxml',
+          'ipaddr'
       ],
      )

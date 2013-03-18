@@ -70,7 +70,7 @@ def hostname_to_ip(hostname):
 try:
     # BEGIN new 'ipaddr' aware code. If the module exists you'll get nice new magic.
     import ipaddr
-    logging.warn('using ipaddr IP verification + CIDR utilities.')
+    logging.debug('using ipaddr IP verification + CIDR utilities.')
     def is_valid_ip_address(address, version=None):
         """ Check validity of address
             Return True if 'address' is a valid ipv4 or ipv6 address.
