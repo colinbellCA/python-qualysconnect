@@ -6,7 +6,7 @@ import qualysconnect.config as qcconf
 import qualysconnect.qg.connect as qcconn
 
 __author__ = "Colin Bell <colin.bell@uwaterloo.ca>"
-__copyright__ = "Copyright 2013, University of Waterloo"
+__copyright__ = "Copyright 2011-2013, University of Waterloo"
 __license__ = "BSD-new"
 
 # define global values used by community code. will standardize debugging later.

@@ -11,7 +11,7 @@ from datetime import datetime
 from lxml import etree, objectify
 
 __author__ = "Colin Bell <colin.bell@uwaterloo.ca>"
-__copyright__ = "Copyright 2013, University of Waterloo"
+__copyright__ = "Copyright 2011-2013, University of Waterloo"
 __license__ = "BSD-new"
 
 def QGXP_hostlist_to_list(qgXML):
