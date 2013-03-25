@@ -12,7 +12,7 @@ from ConfigParser import *
 import qualysconnect.settings as qcs
 
 __author__ = "Colin Bell <colin.bell@uwaterloo.ca>"
-__copyright__ = "Copyright 2011, University of Waterloo"
+__copyright__ = "Copyright 2013, University of Waterloo"
 __license__ = "BSD-new"
 
 class QualysConnectConfig:
@@ -36,9 +36,9 @@ class QualysConnectConfig:
             
             mode = stat.S_IMODE(os.stat(self._cfgfile)[stat.ST_MODE])
             
-            # apply bitmask to current mode to verify ONLY user access permissions.
+            # apply bitmask to current mode to check ONLY user access permissions.
             if (mode & ( stat.S_IRWXG | stat.S_IRWXO )) != 0:
-                logging.warning("%s permissions must ONLY allow user access."%(filename,))
+                logging.warning("%s permissions allows more than user access."%(filename,))
 
             self._cfgparse.read(self._cfgfile)
 
