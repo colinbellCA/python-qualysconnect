@@ -15,7 +15,7 @@ from qualysconnect.util import is_valid_ip_address, hostname_to_ip
 from qualysconnect.qg.xmlproc import QGXP_lxml_objectify, QGXP_qgdt_to_datetime
 
 __author__ = "Colin Bell <colin.bell@uwaterloo.ca>"
-__copyright__ = "Copyright 2013, University of Waterloo"
+__copyright__ = "Copyright 2011-2013, University of Waterloo"
 __license__ = "BSD-new"
 
 def process_cli_arguments():

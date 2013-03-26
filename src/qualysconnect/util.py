@@ -238,7 +238,7 @@ try:
 except ImportError:
     # BEGIN deprecated - Rudimentary "non-ipaddr" IP utilities. 
     logging.warn("DEPRECATED: using simple IP utilities." \
-                 "ipaddr will be required in the future.")
+                 "ipaddr is required in the future.")
     def is_valid_ipv4_address(address):
         """ Check validity of address as a ipv4 address.
         Return True if 'address' is potentially a valid ipv4 address.

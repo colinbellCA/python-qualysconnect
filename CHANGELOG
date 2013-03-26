@@ -1,3 +1,23 @@
+2013-03-25 Colin Bell <colin.bell@uwaterloo.ca>
+
+    * RELEASE: python-qualysconnect-0.0.6
+    
+    * Making 'ipaddr' an 'install_requires' entry in setup.py
+      to auto install.  The old code is there and will still
+      work if ipaddr isn't there, but I will be removing it
+      in the next release.
+      
+    * Moved GETREQ data to DEBUG logging level. At INFO
+      level logging could emit passwords.
+       https://bitbucket.org/uWaterloo_IST_ISS/python-qualysconnect/issue/17
+    
+    * Fixed over zealous permissions check on ~/.qcrc -- warn
+      and do not impose.  Users must know clear text passwords
+      are on disk.  Do what you must to protect them.
+      
+    * Miscellaneous bug fixes.
+
+
 2012-05-10 Colin Bell <colin.bell@uwaterloo.ca>
     
     * RELEASE: python-qualysconnect-0.0.5
@@ -20,6 +40,7 @@
       datasets.  Eventually, throttling + continuation will
       need to be implemented to make this really powerful.
 
+
 2012-03-06 Colin Bell <colin.bell@uwaterloo.ca>
 
     * RELEASE: python-qualysconnect-0.0.4
@@ -32,6 +53,7 @@
       for the time being for local clones. Will look
       to use cleaner formal versioned development
       trees.
+
 
 2012-01-25 Colin Bell <colin.bell@uwaterloo.ca>
 
