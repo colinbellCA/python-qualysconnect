@@ -16,11 +16,11 @@ NOTE: If you would like to experiment without installing globally, look into 'vi
 
 === Requirements ===
 
-You will need lxml installed for XML parsing in qhostinfo.py to work.
+* ipaddr-py (https://code.google.com/p/ipaddr-py/)
 
-* http://lxml.de/
+* lxml (http://lxml.de/)
 
-I've only tested this with Python 2.x.  I will need to test it with Python 3.x.
+I've only tested this with Python 2.7.x,  I will need to work to convert it to Python 3.x.
 
 == Configuration ==
 
