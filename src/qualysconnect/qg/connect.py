@@ -5,6 +5,7 @@ and requesting data from it.
 import urllib2
 import cookielib
 import logging
+import base64
 
 from urllib2 import HTTPPasswordMgrWithDefaultRealm, HTTPBasicAuthHandler
 from urllib2 import HTTPCookieProcessor
@@ -42,6 +43,9 @@ class QGConnector:
         API Version combination.
         """
         headers = {"X-Requested-With":"uWaterloo QualysConnect (python) v%s"%(VERSION,)}
+        if self._APIVersion == 2 and self.__class__.__name__ == 'QGAPIConnect':
+            #Basic Auth connector to QualysGuard API v2
+            headers["Authorization"] = "Basic %s" % self._base64string
         req = urllib2.Request(''.join((self.apiURI(),apiReq)), data, headers)
         
         logging.info("GENREQ> %s"%(req.get_full_url(),))
@@ -102,11 +106,6 @@ class QGAPIConnect(QGConnector):
     """
     def __init__(self, pUser, pPassword, pHost=None, pApiVer=1):
 
-        # Handle special case: APIv2 does not work yet. Raise Exception early.
-        if pApiVer is not 1:
-            raise Exception("HTTP-Basic API Connector does not work with QG API\
-                            version != 1.")
-
         # If provided a hostname, call base class with it.  Otherwise, use
         #  'default' hostname defined in QGConnector constructor.
         if not pHost:
@@ -118,6 +117,9 @@ class QGAPIConnect(QGConnector):
         self._passman = HTTPPasswordMgrWithDefaultRealm()
         self._passman.add_password(None, self.apiURI(), pUser, pPassword)
         self._opener = urllib2.build_opener(HTTPBasicAuthHandler(self._passman))
+
+        # Store base64 encoded username & password for API v2.
+        self._base64string = base64.encodestring('%s:%s' % (pUser,pPassword)).replace('\n', '')
 
 class QGAPISession(QGConnector):
     """ Qualys Connection class which allows requests to the QualysGuard API
