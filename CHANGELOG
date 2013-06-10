@@ -1,3 +1,11 @@
+2013-06-10 Colin Bell <colin.bell@uwaterloo.ca>
+
+    * RELEASE: python-qualysconnect-0.0.7
+
+    * (Author: Parag Baxi - ghee22) Merge fixes for v2 connector
+      allowing access to the v2 API with HTTP BASIC Auth  
+       https://bitbucket.org/uWaterloo_IST_ISS/python-qualysconnect/issue/20
+
 2013-03-25 Colin Bell <colin.bell@uwaterloo.ca>
 
     * RELEASE: python-qualysconnect-0.0.6
