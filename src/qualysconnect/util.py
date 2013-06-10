@@ -25,6 +25,17 @@ def build_v1_connector():
     logging.info("Finished building v1 Connector.")
     return connect
 
+def build_v2_connector():
+    """ Return a QGAPIConnect object for v2 API pulling settings from config
+    file.
+    """
+    conf = qcconf.QualysConnectConfig()
+    connect = qcconn.QGAPIConnect(conf.get_username(),
+                                  conf.get_password(),
+                                  conf.get_hostname(),2)
+    logging.info("Finished building v2 BasicAuth Connector.")
+    return connect
+
 def build_v2_session():
     """ Return a QGAPISession object for v2 API pulling settings for config
     file.
