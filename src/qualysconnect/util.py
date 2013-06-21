@@ -14,6 +14,18 @@ package = 'qualysconnect'
 module = 'util.py'
 from . import __version__ as version
 
+# Define a Handler which writes WARNING messages or higher to the sys.stderr
+logger_console = logging.StreamHandler()
+logger_console.setLevel(logging.ERROR)
+# Set a format which is simpler for console use.
+formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
+# Tell the handler to use this format.
+logger_console.setFormatter(formatter)
+# Add the handler to the root logger
+logging.getLogger(__name__).addHandler(logger_console)
+# Set module level logger.
+logger = logging.getLogger(__name__)
+
 def build_v1_connector():
     """ Return a QGAPIConnect object for v1 API pulling settings from config
     file.
@@ -22,7 +34,7 @@ def build_v1_connector():
     connect = qcconn.QGAPIConnect(conf.get_username(),
                                   conf.get_password(),
                                   conf.get_hostname())
-    logging.info("Finished building v1 Connector.")
+    logger.info("Finished building v1 Connector.")
     return connect
 
 def build_v2_connector():
@@ -33,7 +45,7 @@ def build_v2_connector():
     connect = qcconn.QGAPIConnect(conf.get_username(),
                                   conf.get_password(),
                                   conf.get_hostname(),2)
-    logging.info("Finished building v2 BasicAuth Connector.")
+    logger.info("Finished building v2 BasicAuth Connector.")
     return connect
 
 def build_v2_session():
@@ -44,7 +56,7 @@ def build_v2_session():
     connect = qcconn.QGAPISession(conf.get_username(),
                                   conf.get_password(),
                                   conf.get_hostname())
-    logging.info("Finished building v2 Connector.")
+    logger.info("Finished building v2 Connector.")
     return connect
 
 def hostname_to_ip(hostname):
@@ -53,7 +65,7 @@ def hostname_to_ip(hostname):
     # simplify request.  ask for a simple TCP socket to http.  we only want IP
     addrinfo = socket.getaddrinfo(hostname, 'http')
     
-    logging.debug('getaddrinfo returned %s'%(addrinfo,))
+    logger.debug('getaddrinfo returned %s'%(addrinfo,))
     
     family, socktype, proto, canonname, sockaddr = addrinfo[0]
     
@@ -81,7 +93,7 @@ def hostname_to_ip(hostname):
 try:
     # BEGIN new 'ipaddr' aware code. If the module exists you'll get nice new magic.
     import ipaddr
-    logging.debug('using ipaddr IP verification + CIDR utilities.')
+    logger.debug('using ipaddr IP verification + CIDR utilities.')
     def is_valid_ip_address(address, version=None):
         """ Check validity of address
             Return True if 'address' is a valid ipv4 or ipv6 address.
@@ -98,7 +110,7 @@ try:
         try:
             ipaddr.IPAddress(address,version)
         except ValueError, e:
-            logging.debug('%s/%s-%s, Error: %s' % (package,module,version,e))
+            logger.debug('%s/%s-%s, Error: %s' % (package,module,version,e))
             return False
         return True
     
@@ -133,7 +145,7 @@ try:
         try:
             (start_ip,end_ip) = iprange.split('-')
             if ipaddr.IPAddress(start_ip) == ipaddr.IPAddress(end_ip):
-                logging.debug('%s/%s-%s, Error: %s' %
+                logger.debug('%s/%s-%s, Error: %s' %
                               (package,module,version,
                                'Start and End IP Address in an IP Range can' \
                                'not be the same IP Address.'))
@@ -150,10 +162,10 @@ try:
             ipaddr.summarize_address_range(ipaddr.IPAddress(start_ip,version),
                                            ipaddr.IPAddress(end_ip,version))
         except ipaddr.AddressValueError, e:
-            logging.debug('%s/%s-%s, Error: %s' % (package,module,version,e))
+            logger.debug('%s/%s-%s, Error: %s' % (package,module,version,e))
             return False
         except ValueError, e:
-            logging.debug('%s/%s-%s, Error: %s' % (package,module,version,e))
+            logger.debug('%s/%s-%s, Error: %s' % (package,module,version,e))
             return False
         return True
     
@@ -192,7 +204,7 @@ try:
         try:
             cidr_net = ipaddr.IPNetwork(cidr,version)
         except ValueError, e:
-            logging.debug('%s/%s-%s, Error: %s' % (package,module,version,e))
+            logger.debug('%s/%s-%s, Error: %s' % (package,module,version,e))
             raise ValueError, e
         if cidr_net[0] == cidr_net[-1]:
             return str(cidr_net[0])
@@ -248,7 +260,7 @@ try:
         return ",".join(cml)
 except ImportError:
     # BEGIN deprecated - Rudimentary "non-ipaddr" IP utilities. 
-    logging.warn("DEPRECATED: using simple IP utilities." \
+    logger.warn("DEPRECATED: using simple IP utilities." \
                  "ipaddr is required in the future.")
     def is_valid_ipv4_address(address):
         """ Check validity of address as a ipv4 address.
