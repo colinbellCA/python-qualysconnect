@@ -24,6 +24,7 @@ class QGConnector:
         self._APIVersion = pAPIVer
         self._APIHost = pHost
         self._opener = None  # None reference stub for common 'request' handle
+        self.logger = logging.getLogger(__name__)
         
         # Based on the provided API Version number and hostname,
         # calculate the API URI that we should use to request from QualysGuard.
@@ -35,7 +36,7 @@ class QGConnector:
             raise Exception("Unknown QualysGuard API Version Number (%s)"
                             %(self._APIVersion,))
         
-        logging.info("Connecting to URI (%s) with APIv(%d)"%
+        self.logger.info("Connecting to URI (%s) with APIv(%d)"%
                      (self._APIURI,self._APIVersion))
 
     def _generate_request(self,apiReq,data=None):
@@ -48,8 +49,8 @@ class QGConnector:
             headers["Authorization"] = "Basic %s" % self._base64string
         req = urllib2.Request(''.join((self.apiURI(),apiReq)), data, headers)
         
-        logging.info("GENREQ> %s"%(req.get_full_url(),))
-        logging.debug("\t> w/ %s"%(data,))
+        self.logger.info("GENREQ> %s"%(req.get_full_url(),))
+        self.logger.debug("\t> w/ %s"%(data,))
         return req
 
     def apiURI(self):
@@ -80,7 +81,7 @@ class QGConnector:
         data -- [optional] if provided, use HTTP POST and submit data provided.
         """
         qualysRequest = self._generate_request(apiReq,data)
-        logging.debug("QGC-build_request| %s, %s"%(str(apiReq), str(data)))
+        self.logger.debug("QGC-build_request| %s, %s"%(str(apiReq), str(data)))
         request_opener = self._opener.open(qualysRequest)
         return request_opener
     
