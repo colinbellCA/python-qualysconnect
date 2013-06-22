@@ -1,3 +1,11 @@
+2013-06-21 Colin Bell <colin.bell@uwaterloo.ca>
+    * RELEASE: python-qualysconnect-0.0.8
+
+    * (Author: Parag Baxi - ghee22) Fixed logging bug.  Library
+      had initially used the global 'root' logger to handle log
+      messages.  A module level handler has been added and logging
+      shifted to it.
+
 2013-06-10 Colin Bell <colin.bell@uwaterloo.ca>
 
     * RELEASE: python-qualysconnect-0.0.7
