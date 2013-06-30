@@ -2,7 +2,7 @@
 """ Module that contains classes for setting up connections to QualysGuard API
 and requesting data from it.
 """
-import urllib2
+import urllib2, requests, urlparse
 import cookielib
 import logging
 import base64
@@ -39,20 +39,6 @@ class QGConnector:
         self.logger.info("Connecting to URI (%s) with APIv(%d)"%
                      (self._APIURI,self._APIVersion))
 
-    def _generate_request(self,apiReq,data=None):
-        """ Returns a urllib2.Request object for this connector's API URI and
-        API Version combination.
-        """
-        headers = {"X-Requested-With":"uWaterloo QualysConnect (python) v%s"%(VERSION,)}
-        if self._APIVersion == 2 and self.__class__.__name__ == 'QGAPIConnect':
-            #Basic Auth connector to QualysGuard API v2
-            headers["Authorization"] = "Basic %s" % self._base64string
-        req = urllib2.Request(''.join((self.apiURI(),apiReq)), data, headers)
-        
-        self.logger.info("GENREQ> %s"%(req.get_full_url(),))
-        self.logger.debug("\t> w/ %s"%(data,))
-        return req
-
     def apiURI(self):
         """ Return the base API URI calculated for this QualysGuard API version
         and hostname combination.
@@ -70,21 +56,7 @@ class QGConnector:
         believes it is interacting with.
         """
         return self._APIVersion
-    
-    def build_request(self,apiReq,data=None):
-        """ Build and return the HTTP opener to the QualysGuard API w/ the
-        provided API request.
-        
-        Keyword Arguments:
-        ==================
-        apiReq -- request string from QualysGuard URL base onward.
-        data -- [optional] if provided, use HTTP POST and submit data provided.
-        """
-        qualysRequest = self._generate_request(apiReq,data)
-        self.logger.debug("QGC-build_request| %s, %s"%(str(apiReq), str(data)))
-        request_opener = self._opener.open(qualysRequest)
-        return request_opener
-    
+
     def request(self, apiReq, data=None):
         """ Return the response from QualysGuard API for the provided request.
         
@@ -93,8 +65,28 @@ class QGConnector:
         apiReq -- request string from QualysGuard URL base onward.
         data -- [optional] if provided, use HTTP POST and submit data provided.
         """
-        request = self.build_request(apiReq, data)
-        return request.read()
+        # Set up headers.
+        url = ''.join((self.apiURI(),apiReq))
+        headers = {"X-Requested-With":"uWaterloo QualysConnect (python) v%s"%(VERSION,)}
+        if self._APIVersion == 2 and self.__class__.__name__ == 'QGAPIConnect':
+            #Basic Auth connector to QualysGuard API v2
+            headers["Authorization"] = "Basic %s" % self._base64string
+        # Make request.
+        if not data:
+            # GET
+            request = requests.get(url, headers=headers)
+        else:
+            # POST
+            # If payload is a string, convert to dictionary.
+            if type(data) == str:
+                if data[0] == '?':
+                    # Remove question mark.
+                    data = data[1:]
+                # Convert to dictionary.
+                data = urlparse.parse_qs(data)
+            r = requests.post(url, data=data, headers=headers)
+        self.logger.info(r.headers)
+        return r.text
 
 class QGAPIConnect(QGConnector):
     """ Qualys Connection class which allows requests to the QualysGuard API
