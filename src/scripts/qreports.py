@@ -50,16 +50,21 @@ def process_cli_arguments():
     parser.add_option("-t", dest="rpt_t",
                       help="The generated report title.", default=None)
     # Options pertaining to seeing the progress of a report.
+    parser.add_option("-l", "--listreports", action="store_true", dest="dl_l",
+                      help="List all reports.")
     parser.add_option("-P", "--progress", dest="prog_n",
                       help="Show the progress of a given report.")
     # Options pertaining to downloading a report.
     parser.add_option("-D", "--download", dest="dl_n",
                       help="Download the results from a report.")
+    # Options pertaining to deleting a report.
+    parser.add_option("-X", "--delete", dest="dl_X",
+		      help="Delete a given report number from Qualys.")
     
     (options, args) = parser.parse_args()
     
     if not ( options.listscans or options.listreports or options.launchrpt
-               or options.prog_n or options.dl_n):
+               or options.prog_n or options.dl_n or options.dl_X or options.dl_l):
         parser.print_help()
         parser.error("Need arguments")
     
@@ -86,20 +91,24 @@ def display_QG_scanlist(scanlist):
     """ Displays a QualysGuard scanlist in an easy to copy/paste format.
     
     """
-#    from lxml import objectify
     for scan in scanlist.RESPONSE.SCAN_LIST.SCAN:
-#        print objectify.dump(scan)
         scandt = QGXP_qgdt_to_datetime(scan.LAUNCH_DATETIME)
         print "[%s]\t{( %s | %s )}"%(scan.REF, scandt, scan.TITLE)
+
+def display_QG_reportlist(reportlist):
+    """ Displays a QualysGuard reportlist in an easy to copy/paste format.
+    
+    """
+    for (n,report) in enumerate(reportlist.RESPONSE.REPORT_LIST.REPORT):
+        reportdt = QGXP_qgdt_to_datetime(report.LAUNCH_DATETIME)
+        print "[%s]\t{( %s | %s | %s)}"%(report.ID, reportdt, report.TITLE, report.STATUS.STATE)
 
 def display_QG_report_template_list(list):
     """ Displays a QualysGuard report template list in an easy to copy/paste
     format.
     
     """
-#    from lxml import objectify
     for template in list.REPORT_TEMPLATE:
-#        print objectify.dump(template)
         print "[%s]\t{( %s | %s )}"%(template.ID,
                                      str(template.TEMPLATE_TYPE)[0],
                                      template.TITLE)
@@ -158,8 +167,17 @@ if __name__ == '__main__':
         else:
             print "Unknown"
 
+    elif options.dl_l:
+	ret = qgs.request("report/","action=list")
+	r = QGXP_lxml_objectify(ret)
+	display_QG_reportlist(r)
+
     elif options.dl_n:
         ret = qgs.request("report/","action=fetch&id=%s&"%(options.dl_n))
         print ret
     
+    elif options.dl_X:
+        ret = qgs.request("report/","action=delete&id=%s&"%(options.dl_X))
+        print ret
+
     qgs.disconnect()
